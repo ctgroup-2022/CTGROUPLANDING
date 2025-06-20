@@ -1,0 +1,357 @@
+---
+# CT Group Landing Page - cPanel Deployment Configuration
+# DevOps Strategy: Automated deployment with environment management
+
+deployment:
+  tasks:
+    # Pre-deployment tasks
+    - export DEPLOYPATH=/home/ctgroup/public_html/
+    - export BACKUPPATH=/home/ctgroup/backups/
+    - export TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+    
+    # 1. Create backup of current deployment
+    - echo "🔄 Creating backup of current deployment..."
+    - mkdir -p $BACKUPPATH
+    - cp -r $DEPLOYPATH $BACKUPPATH/backup_$TIMESTAMP
+    - echo "✅ Backup created at $BACKUPPATH/backup_$TIMESTAMP"
+    
+    # 2. Environment preparation
+    - echo "🛠️ Preparing deployment environment..."
+    - mkdir -p $DEPLOYPATH/assets/images/campuses
+    - mkdir -p $DEPLOYPATH/assets/images/institutions
+    - mkdir -p $DEPLOYPATH/assets/images/certifications
+    - mkdir -p $DEPLOYPATH/assets/images/testimonials
+    - mkdir -p $DEPLOYPATH/assets/images/backgrounds
+    - mkdir -p $DEPLOYPATH/assets/css
+    - mkdir -p $DEPLOYPATH/assets/js
+    - mkdir -p $DEPLOYPATH/lib
+    - mkdir -p $DEPLOYPATH/includes
+    - mkdir -p $DEPLOYPATH/components
+    
+    # 3. Copy core files
+    - echo "📁 Deploying core files..."
+    - cp index.php $DEPLOYPATH/
+    - cp .htaccess $DEPLOYPATH/
+    - cp dimensions.md $DEPLOYPATH/
+    
+    # 4. Copy configuration files
+    - echo "⚙️ Deploying configuration..."
+    - cp includes/config.php $DEPLOYPATH/includes/
+    - cp includes/header.php $DEPLOYPATH/includes/
+    - cp includes/footer.php $DEPLOYPATH/includes/
+    - cp includes/navbar.php $DEPLOYPATH/includes/
+    
+    # 5. Copy library files
+    - echo "📚 Deploying libraries..."
+    - cp lib/helpers.php $DEPLOYPATH/lib/
+    - cp lib/db-connection.php $DEPLOYPATH/lib/
+    
+    # 6. Copy component files
+    - echo "🧩 Deploying components..."
+    - cp components/hero-banner.php $DEPLOYPATH/components/
+    - cp components/campus-section.php $DEPLOYPATH/components/
+    - cp components/institutions.php $DEPLOYPATH/components/
+    - cp components/certifications.php $DEPLOYPATH/components/
+    - cp components/testimonials.php $DEPLOYPATH/components/
+    - cp components/stats-section.php $DEPLOYPATH/components/
+    - cp components/quick-links.php $DEPLOYPATH/components/
+    - cp components/loader.php $DEPLOYPATH/components/
+    - cp components/admission-popup.php $DEPLOYPATH/components/
+    
+    # 7. Copy assets
+    - echo "🎨 Deploying assets..."
+    - cp -r assets/css/* $DEPLOYPATH/assets/css/
+    - cp -r assets/js/* $DEPLOYPATH/assets/js/
+    - cp -r assets/images/* $DEPLOYPATH/assets/images/
+    
+    # 8. Set proper file permissions
+    - echo "🔐 Setting file permissions..."
+    - find $DEPLOYPATH -type f -name "*.php" -exec chmod 644 {} \;
+    - find $DEPLOYPATH -type f -name "*.css" -exec chmod 644 {} \;
+    - find $DEPLOYPATH -type f -name "*.js" -exec chmod 644 {} \;
+    - find $DEPLOYPATH -type f -name "*.html" -exec chmod 644 {} \;
+    - find $DEPLOYPATH -type f -name "*.jpg" -exec chmod 644 {} \;
+    - find $DEPLOYPATH -type f -name "*.png" -exec chmod 644 {} \;
+    - find $DEPLOYPATH -type f -name "*.webp" -exec chmod 644 {} \;
+    - find $DEPLOYPATH -type d -exec chmod 755 {} \;
+    - chmod 644 $DEPLOYPATH/.htaccess
+    
+    # 9. Environment-specific configurations
+    - echo "🌍 Configuring environment..."
+    - |
+      if [ "$CPANEL_ENV" = "production" ]; then
+        echo "🚀 Production environment detected"
+        # Enable production optimizations
+        sed -i 's/error_reporting(E_ALL)/error_reporting(0)/' $DEPLOYPATH/includes/config.php
+        sed -i 's/display_errors = On/display_errors = Off/' $DEPLOYPATH/includes/config.php
+        # Enable caching
+        echo "# Production Cache Headers" >> $DEPLOYPATH/.htaccess
+        echo "ExpiresActive On" >> $DEPLOYPATH/.htaccess
+        echo "ExpiresByType image/jpg \"access plus 1 month\"" >> $DEPLOYPATH/.htaccess
+        echo "ExpiresByType image/jpeg \"access plus 1 month\"" >> $DEPLOYPATH/.htaccess
+        echo "ExpiresByType image/png \"access plus 1 month\"" >> $DEPLOYPATH/.htaccess
+        echo "ExpiresByType image/webp \"access plus 1 month\"" >> $DEPLOYPATH/.htaccess
+        echo "ExpiresByType text/css \"access plus 1 month\"" >> $DEPLOYPATH/.htaccess
+        echo "ExpiresByType application/javascript \"access plus 1 month\"" >> $DEPLOYPATH/.htaccess
+      else
+        echo "🧪 Development/Staging environment detected"
+        # Enable debugging
+        sed -i 's/error_reporting(0)/error_reporting(E_ALL)/' $DEPLOYPATH/includes/config.php
+        sed -i 's/display_errors = Off/display_errors = On/' $DEPLOYPATH/includes/config.php
+      fi
+    
+    # 10. Cache optimization
+    - echo "⚡ Optimizing cache..."
+    - |
+      cat >> $DEPLOYPATH/.htaccess << 'EOF'
+      
+      # CT Group Landing Page - Performance Optimizations
+      
+      # Enable Compression
+      <IfModule mod_deflate.c>
+          AddOutputFilterByType DEFLATE text/plain
+          AddOutputFilterByType DEFLATE text/html
+          AddOutputFilterByType DEFLATE text/xml
+          AddOutputFilterByType DEFLATE text/css
+          AddOutputFilterByType DEFLATE application/xml
+          AddOutputFilterByType DEFLATE application/xhtml+xml
+          AddOutputFilterByType DEFLATE application/rss+xml
+          AddOutputFilterByType DEFLATE application/javascript
+          AddOutputFilterByType DEFLATE application/x-javascript
+      </IfModule>
+      
+      # Browser Caching
+      <IfModule mod_expires.c>
+          ExpiresActive On
+          ExpiresByType image/jpg "access plus 1 month"
+          ExpiresByType image/jpeg "access plus 1 month"
+          ExpiresByType image/gif "access plus 1 month"
+          ExpiresByType image/png "access plus 1 month"
+          ExpiresByType image/webp "access plus 1 month"
+          ExpiresByType text/css "access plus 1 month"
+          ExpiresByType application/pdf "access plus 1 month"
+          ExpiresByType application/javascript "access plus 1 month"
+          ExpiresByType application/x-javascript "access plus 1 month"
+          ExpiresByType application/x-shockwave-flash "access plus 1 month"
+          ExpiresByType image/x-icon "access plus 1 year"
+      </IfModule>
+      
+      # Security Headers
+      <IfModule mod_headers.c>
+          Header always set X-Content-Type-Options nosniff
+          Header always set X-Frame-Options DENY
+          Header always set X-XSS-Protection "1; mode=block"
+          Header always set Referrer-Policy "strict-origin-when-cross-origin"
+          Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+      </IfModule>
+      EOF
+    
+    # 11. Health check
+    - echo "🏥 Performing health check..."
+    - |
+      if curl -f -s "$DEPLOYMENT_URL" > /dev/null; then
+        echo "✅ Website is accessible"
+      else
+        echo "❌ Website health check failed"
+        exit 1
+      fi
+    
+    # 12. Post-deployment tasks
+    - echo "🎯 Running post-deployment tasks..."
+    - |
+      # Clear any existing cache
+      if [ -d "$DEPLOYPATH/cache" ]; then
+        rm -rf $DEPLOYPATH/cache/*
+        echo "✅ Cache cleared"
+      fi
+      
+      # Log deployment
+      echo "$(date): Deployment completed successfully" >> $DEPLOYPATH/deployment.log
+      
+      # Create version file
+      echo "CT Group Landing Page v1.0" > $DEPLOYPATH/version.txt
+      echo "Deployed: $(date)" >> $DEPLOYPATH/version.txt
+      echo "Commit: $COMMIT_HASH" >> $DEPLOYPATH/version.txt
+    
+    # 13. Cleanup old backups (keep last 5)
+    - echo "🧹 Cleaning up old backups..."
+    - ls -t $BACKUPPATH/backup_* | tail -n +6 | xargs -r rm -rf
+    
+    # 14. Final status report
+    - echo "📊 Deployment Summary:"
+    - echo "✅ Files deployed successfully"
+    - echo "✅ Permissions set correctly"
+    - echo "✅ Cache optimization enabled"
+    - echo "✅ Security headers configured"
+    - echo "✅ Health check passed"
+    - echo "🚀 CT Group Landing Page is live!"
+
+# Environment-specific variables
+environments:
+  production:
+    variables:
+      DEPLOYMENT_URL: "https://ctgroup.in"
+      DB_HOST: "localhost"
+      DB_NAME: "ctgroup_main"
+      ENVIRONMENT: "production"
+      DEBUG_MODE: "false"
+      CACHE_ENABLED: "true"
+  
+  staging:
+    variables:
+      DEPLOYMENT_URL: "https://staging.ctgroup.in"
+      DB_HOST: "localhost"
+      DB_NAME: "ctgroup_staging"
+      ENVIRONMENT: "staging"
+      DEBUG_MODE: "true"
+      CACHE_ENABLED: "false"
+
+# Rollback strategy
+rollback:
+  tasks:
+    - echo "🔄 Initiating rollback..."
+    - export LATEST_BACKUP=$(ls -t /home/ctgroup/backups/backup_* | head -n 1)
+    - echo "📦 Restoring from backup: $LATEST_BACKUP"
+    - rm -rf /home/ctgroup/public_html/*
+    - cp -r $LATEST_BACKUP/* /home/ctgroup/public_html/
+    - echo "✅ Rollback completed successfully"
+
+# Monitoring and alerts
+monitoring:
+  health_checks:
+    - url: "{{ DEPLOYMENT_URL }}"
+      timeout: 10
+      expected_status: 200
+    - url: "{{ DEPLOYMENT_URL }}/assets/css/style.css"
+      timeout: 5
+      expected_status: 200
+    - url: "{{ DEPLOYMENT_URL }}/assets/js/main.js"
+      timeout: 5
+      expected_status: 200
+
+# Security configurations
+security:
+  file_permissions:
+    directories: 755
+    files: 644
+    sensitive_files:
+      - path: "includes/config.php"
+        permission: 600
+      - path: "lib/db-connection.php"
+        permission: 600
+  
+  blocked_extensions:
+    - .env
+    - .git
+    - .gitignore
+    - .DS_Store
+    - .vscode
+    - node_modules
+    - composer.lock
+    - package-lock.json
+
+# Performance optimizations
+performance:
+  compression:
+    enabled: true
+    types:
+      - text/html
+      - text/css
+      - application/javascript
+      - application/json
+      - image/svg+xml
+  
+  caching:
+    static_files: "1 month"
+    images: "1 month"
+    css: "1 month"
+    javascript: "1 month"
+    html: "1 hour"
+
+# Backup strategy
+backup:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  retention: 30  # Keep backups for 30 days
+  exclude:
+    - cache/
+    - logs/
+    - tmp/
+    - .git/
+    - node_modules/
+
+# Database operations (if needed)
+database:
+  migrations:
+    - echo "📊 Checking database..."
+    - |
+      if [ -f "database/migrations.sql" ]; then
+        echo "🔄 Running database migrations..."
+        mysql -h $DB_HOST -u $DB_USER -p$DB_PASS $DB_NAME < database/migrations.sql
+        echo "✅ Database migrations completed"
+      else
+        echo "ℹ️ No database migrations found"
+      fi
+
+# Notification settings
+notifications:
+  slack:
+    webhook_url: "${SLACK_WEBHOOK_URL}"
+    channel: "#deployments"
+    on_success: true
+    on_failure: true
+  
+  email:
+    recipients:
+      - "dev@ctgroup.in"
+      - "admin@ctgroup.in"
+    on_failure: true
+
+# Git integration
+git:
+  branch: "main"
+  pre_deploy:
+    - git pull origin main
+    - git status
+  post_deploy:
+    - git log -1 --pretty=format:"Deployed commit: %h - %s (%an, %ar)"
+
+# SSL/HTTPS enforcement
+ssl:
+  force_https: true
+  hsts_max_age: 31536000
+  include_subdomains: true
+
+# Custom error pages
+error_pages:
+  404: "errors/404.html"
+  500: "errors/500.html"
+  403: "errors/403.html"
+
+# Maintenance mode
+maintenance:
+  enabled: false
+  message: "CT Group website is under maintenance. Please check back soon."
+  allowed_ips:
+    - "127.0.0.1"
+    - "YOUR_DEV_IP_HERE"
+
+# CDN configuration (if using)
+cdn:
+  enabled: false
+  provider: "cloudflare"
+  purge_cache: true
+  
+# Analytics and monitoring
+analytics:
+  google_analytics: "G-XXXXXXXXXX"
+  google_tag_manager: "GTM-XXXXXXX"
+  
+# Final deployment verification
+verification:
+  tasks:
+    - echo "🔍 Verifying deployment..."
+    - test -f /home/ctgroup/public_html/index.php || (echo "❌ index.php missing" && exit 1)
+    - test -d /home/ctgroup/public_html/assets || (echo "❌ assets directory missing" && exit 1)
+    - test -d /home/ctgroup/public_html/components || (echo "❌ components directory missing" && exit 1)
+    - echo "✅ All critical files and directories present"
+    - echo "🎉 Deployment verification completed successfully!"
