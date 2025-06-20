@@ -1,0 +1,316 @@
+/* 
+ * Custom Animations CSS - Fixed version
+ * Enhanced compatibility across browsers
+ */
+
+/* Custom mouse cursor */
+.cursor {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background-color: var(--primary);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s;
+}
+
+.cursor-circle {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(187, 34, 37, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s, background-color 0.3s;
+}
+
+.cursor.active {
+    width: 14px;
+    height: 14px;
+}
+
+.cursor-circle.active {
+    width: 50px;
+    height: 50px;
+    border-color: rgba(187, 34, 37, 0.2);
+    background-color: rgba(187, 34, 37, 0.1);
+}
+
+/* Enhanced preloader */
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.5s;
+}
+
+.loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-animation {
+    width: 100px;
+    height: 100px;
+}
+
+.logo-animation .path {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: draw 2s linear forwards infinite;
+}
+
+.logo-animation .circle {
+    stroke-dasharray: 188.4;
+    stroke-dashoffset: 188.4;
+    animation: draw 2s linear 0.5s forwards infinite;
+}
+
+.loading-text {
+    margin-top: 15px;
+    font-family: var(--font-secondary);
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: var(--primary);
+    letter-spacing: 2px;
+}
+
+@keyframes draw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Modern form fields */
+.form-group {
+    position: relative;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.form-control {
+    border: 2px solid var(--neutral-light);
+    border-radius: var(--border-radius);
+    padding: 12px 15px;
+    background-color: rgba(245, 245, 245, 0.7);
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: var(--primary);
+    background-color: #fff;
+}
+
+.field-animation {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 0;
+    background-color: var(--primary);
+    transition: width 0.3s ease;
+}
+
+.form-group.focused label {
+    font-size: 0.8rem;
+    top: 0;
+    color: var(--primary);
+}
+
+/* Button hover effects */
+.btn {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    transition: transform 0.3s, color 0.3s, background-color 0.3s;
+}
+
+.btn:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.2);
+    transition: left 0.4s ease;
+    z-index: -1;
+}
+
+.btn:hover:before {
+    left: 0;
+}
+
+.btn:active {
+    transform: translateY(2px);
+}
+
+/* Campus card hover effects */
+.campus-card, 
+.institution-card, 
+.testimonial-card,
+.stat-item {
+    transition: transform 0.5s, box-shadow 0.5s;
+    overflow: hidden;
+}
+
+.campus-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.campus-image img,
+.institution-image img {
+    transition: transform 0.8s;
+}
+
+.campus-card:hover .campus-image img,
+.institution-card:hover .institution-image img {
+    transform: scale(1.08);
+}
+
+/* Stats item hover effect */
+.stat-item {
+    transition: transform 0.5s, background-color 0.5s;
+}
+
+.stat-item:hover {
+    transform: translateY(-5px);
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Back to top button animation */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 45px;
+    height: 45px;
+    background-color: var(--primary);
+    color: var(--light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.5s;
+    cursor: pointer;
+}
+
+.back-to-top.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-to-top:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-5px);
+}
+
+/* Enhanced hero section animations */
+.hero-content .subtitle,
+.hero-content .title,
+.hero-content .campus-title,
+.hero-content .description,
+.hero-content .hero-btns {
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s forwards;
+}
+
+.hero-content .title { animation-delay: 0.2s; }
+.hero-content .campus-title { animation-delay: 0.4s; }
+.hero-content .description { animation-delay: 0.6s; }
+.hero-content .hero-btns { animation-delay: 0.8s; }
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Testimonial card hover effect */
+.testimonial-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced hero slider pagination */
+.swiper-pagination-bullet {
+    width: 12px;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 1;
+    transition: width 0.3s;
+}
+
+.swiper-pagination-bullet-active {
+    background: var(--primary);
+    width: 30px;
+    border-radius: 6px;
+}
+
+/* Enhanced swiper navigation buttons */
+.swiper-button-next,
+.swiper-button-prev {
+    width: 50px;
+    height: 50px;
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+    font-size: 20px;
+    color: var(--light);
+}
+
+/* Particles background */
+#particles-js {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+/* Responsive cursors - hide on mobile/tablet */
+@media (max-width: 991.98px) {
+    .cursor, .cursor-circle {
+        display: none;
+    }
+    
+    .stat-item:hover {
+        transform: none;
+    }
+}
